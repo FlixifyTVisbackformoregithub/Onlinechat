@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FSMS School Chat</title>
+    <title>FSMS Online Chat (NOAH ERSPAMER)</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
@@ -83,35 +83,35 @@
     <div id="chat-container">
         <div id="chat"></div>
         <div style="display: flex; padding: 10px;">
-            <input id="message" type="text" placeholder="Type your message..." autofocus required>
+            <input id="message" type="text" placeholder="Type your message..." autofocus>
             <button id="send">Send</button>
         </div>
     </div>
 
     <script>
         const socket = io();
-        const username = `Guest${Math.floor(1000 + Math.random() * 9000)}`; 
+        const username = `Guest${Math.floor(1000 + Math.random() * 9000)}`; // Generate random guest username
 
         document.getElementById('send').onclick = function() {
             const messageInput = document.getElementById('message');
-            const message = messageInput.value.trim();  // Trim whitespace
+            const message = messageInput.value;
             if (message) {
-                socket.emit('send_message', username, message);
-                messageInput.value = ''; // Clear input after sending
-            } else {
-                alert("Message cannot be empty!"); // Alert if message is empty
+                const formattedMessage = `${username}: ${message}`;
+                socket.emit('send_message', formattedMessage);
+                displayMessage(formattedMessage, 'user');
+                messageInput.value = '';
             }
         };
 
         socket.on('receive_message', function(data) {
-            displayMessage(data);
+            displayMessage(data, 'other');
         });
 
-        function displayMessage(message) {
+        function displayMessage(message, sender) {
             const chat = document.getElementById('chat');
             const messageElement = document.createElement('div');
             messageElement.textContent = message;
-            messageElement.classList.add('message');
+            messageElement.classList.add('message', sender);
             chat.appendChild(messageElement);
             chat.scrollTop = chat.scrollHeight; // Auto-scroll to the bottom
         }
